@@ -1,4 +1,3 @@
-#from pylab import imread
 from scipy.ndimage import gaussian_filter
 from stl_tools import numpy2stl
 import Image
@@ -9,7 +8,7 @@ import sys
 
 # geomapapp -> find map -> grid dialog -> black to white -> no sun -> preferences -> turn off axis -> save as .png
 
-BGCOLOR='#E0EEEE'
+BGCOLOR='#E5EDF3' #'#E0EEEE'
 imageScale=1  #minimum image size divided by (ie 2 means half)
 maxDimension=400 #much larger than this and the time it takes to compile is too long, the file is too big, and the model is much larger than a printer can print
 border=6 #gets rid of black lat and long lines in the .png
@@ -40,11 +39,6 @@ class Application(Tkinter.Frame):
         img = Image.open(self.fileLocation)
         self.width,self.height=img.size
         self.imageScale=max(self.imageScale,((max(self.width, self.height))/maxDimension))
-        print self.imageScale
-##        if self.fileType=='png':
-##            self.imageScale=1
-##        elif self.fileType=='tif' or self.fileType=='iff': #DEM Tiffs seem to be really really big
-##            self.imageScale=8
         imgCrop=img.crop((border,border,self.width-border,self.height-border))
         imgSmall = imgCrop.resize((self.width/self.imageScale,self.height/self.imageScale), Image.ANTIALIAS)
         #other options: ANTIALIAS, NEAREST, BILINEAR, BICUBIC
@@ -100,7 +94,7 @@ class Application(Tkinter.Frame):
             
         numpy2stl (heightArray, fileName+".stl",
                    scale=scaleFactor, #maximum height?
-                   #mask_val=1, #cuts of bottom to make islands
+                   #mask_val=1, #cuts off bottom to make islands
                    max_width=maxWidth,
                    max_depth=maxDepth,
                    max_height=maxHeight,
@@ -108,12 +102,12 @@ class Application(Tkinter.Frame):
                    solid=bottom) #True means it will make a bottom
         self.outputBox.delete(1.0,Tkinter.END)
         self.outputBox.insert(Tkinter.END,'Program is finished.')
-        # To stop redirecting stdout:
+        #stop redirecting stdout:
         sys.stdout = sys.__stdout__
         
 
     def makeSlider(self, caption, default, width=None, **options):
-        Tkinter.Label(root, text=caption, bg='#E0EEEE').grid(row=3, column=self.column, columnspan=2, sticky='w')
+        Tkinter.Label(root, text=caption, bg=BGCOLOR).grid(row=3, column=self.column, columnspan=2, sticky='w')
         slider = Tkinter.Scale(root, **options)
         slider.grid(row=4, column=self.column, columnspan=2)
         self.column+=2
@@ -121,7 +115,7 @@ class Application(Tkinter.Frame):
         return slider
 
     def areaSlider(self, caption, default, width=None, **options):
-        Tkinter.Label(root, text=caption, bg='#E0EEEE').grid(row=5, column=1)
+        Tkinter.Label(root, text=caption, bg=BGCOLOR).grid(row=5, column=1)
         slider = Tkinter.Scale(root, **options)
         slider.grid(row=5, column=2, columnspan=6)
         slider.set(default)
@@ -158,14 +152,14 @@ class Application(Tkinter.Frame):
         self.startButton=self.makeButton(text="Start", width=10,command=self.main)
         self.outputBox = Tkinter.Text(root, bg=BGCOLOR, height= 1, fg='black', font=("Helvetica", 10), relief=Tkinter.FLAT, yscrollcommand='TRUE')#fg='black', relief=Tkinter.SUNKEN, 
         self.outputBox.grid(row=6, column=1, columnspan=6)
-        self.insertImage('instructions',row=7,column=1,columnspan=10)
+        self.insertImage('instructions',row=7,column=1,rowspan=10,columnspan=10)
 
 
 
 root = Tkinter.Tk()
 root.title("GeoMapApp to *.stl")
-root.configure(background='#E0EEEE')
-root.geometry('930x1035')#('800x150+100+100')
+root.configure(background=BGCOLOR)
+root.geometry('935x1060')#('800x150+100+100')
 app = Application(master=root)
 app.mainloop()
 

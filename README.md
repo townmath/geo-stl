@@ -15,7 +15,7 @@ Directions:
  9. Before you close GeoMapApp, write down the highest and lowest elevation
  10. Open geo-stl
  11. Set high point and low point
- 12. Set Vertical Exagerration (1 looks good, but .5 is closest to real life)
+ 12. Set Vertical Exaggeration (1 looks good, but .5 is closest to real life)
  13. Select File
  14. Start (takes a while)
  15. Your file will be saved in the same directory as the image you chose. 

@@ -1,0 +1,17 @@
+0.4
+Added automatic resizing of pictures based on size. 
+Added stealth super-user DEM tiff function. 
+Made it prettier. 
+
+0.3
+Fixed vertical exaggeration, now default is 1. 
+
+Added area input to help calculate proper vertical exaggeration. 
+Widened sliders so it is easier to input heights. 
+Made text box invisible so it looks nicer.  
+
+0.2
+Input easier to use, added manual vertical exaggeration. 
+
+0.1
+Barely works!!

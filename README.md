@@ -23,10 +23,10 @@ Directions:
 
 
 Dependencies:
-scipy
-stl_tools
-Image
-Tkinter
-numpy
-tkFileDialog
-sys
+ - scipy
+ - stl_tools
+ - Image
+ - Tkinter
+ - numpy
+ - tkFileDialog
+ - sys

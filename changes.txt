@@ -1,3 +1,6 @@
+0.5
+Added logo and instructions.
+
 0.4
 Added automatic resizing of pictures based on size. 
 Added stealth super-user DEM tiff function. 

@@ -1,3 +1,4 @@
+#from pylab import imread
 from scipy.ndimage import gaussian_filter
 from stl_tools import numpy2stl
 import Image
@@ -8,6 +9,7 @@ import sys
 
 # geomapapp -> find map -> grid dialog -> black to white -> no sun -> preferences -> turn off axis -> save as .png
 
+BGCOLOR='#E0EEEE'
 imageScale=1  #minimum image size divided by (ie 2 means half)
 maxDimension=400 #much larger than this and the time it takes to compile is too long, the file is too big, and the model is much larger than a printer can print
 border=6 #gets rid of black lat and long lines in the .png
@@ -119,9 +121,9 @@ class Application(Tkinter.Frame):
         return slider
 
     def areaSlider(self, caption, default, width=None, **options):
-        Tkinter.Label(root, text=caption, bg='#E0EEEE').grid(row=5, column=0)
+        Tkinter.Label(root, text=caption, bg='#E0EEEE').grid(row=5, column=1)
         slider = Tkinter.Scale(root, **options)
-        slider.grid(row=5, column=1, columnspan=6)
+        slider.grid(row=5, column=2, columnspan=6)
         slider.set(default)
         return slider
 
@@ -129,7 +131,14 @@ class Application(Tkinter.Frame):
         button = Tkinter.Button(root, **options)
         button.grid(row=3, column=self.column, rowspan=2)
         self.column+=1
-        return button                                 
+        return button
+
+
+    def insertImage(self,filename,**options):
+        theImage=Tkinter.PhotoImage(file="images/"+filename+".gif")
+        instructionLabel = Tkinter.Label(root, image=theImage)
+        instructionLabel.photo=theImage
+        instructionLabel.grid(**options)
 
     def __init__(self, master=None):
         Tkinter.Frame.__init__(self, master)
@@ -139,22 +148,24 @@ class Application(Tkinter.Frame):
         self.fileType='png'
         self.grid()
         self.imageScale=imageScale #image size divided by (ie 2 means half): default is 1
-        self.column=0
-        self.high=self.makeSlider("Highest Point (m)", 100, from_=0, to=10000, length=200, bg='#E0EEEE', resolution=10, orient=Tkinter.HORIZONTAL)
-        self.low =self.makeSlider("Lowest Point (m)", 0, from_=0, to=10000, length=200, bg='#E0EEEE', resolution=10, orient=Tkinter.HORIZONTAL)
-        self.area = self.areaSlider("Area (sq km)",50,from_=1, to=100000, length=600, bg='#E0EEEE', resolution=1, orient=Tkinter.HORIZONTAL) 
-        self.vertExag=self.makeSlider("Vertical Exaggeration", 1, from_=.1, to=10, length=150, bg='#E0EEEE', resolution=.1, orient=Tkinter.HORIZONTAL)
+        self.column=1
+        self.insertImage('logo',row=0,column=0,rowspan=10)
+        self.high=self.makeSlider("Highest Point (m)", 100, from_=0, to=10000, length=200, bg=BGCOLOR, resolution=10, orient=Tkinter.HORIZONTAL)
+        self.low =self.makeSlider("Lowest Point (m)", 0, from_=0, to=10000, length=200, bg=BGCOLOR, resolution=10, orient=Tkinter.HORIZONTAL)
+        self.area = self.areaSlider("Area (sq km)",50,from_=1, to=100000, length=600, bg=BGCOLOR, resolution=1, orient=Tkinter.HORIZONTAL) 
+        self.vertExag=self.makeSlider("Vertical Exaggeration", 1, from_=.1, to=10, length=150, bg=BGCOLOR, resolution=.1, orient=Tkinter.HORIZONTAL)
         self.fileButton=self.makeButton(text="Choose File", width=15,command=self.pickFile)
         self.startButton=self.makeButton(text="Start", width=10,command=self.main)
-        self.outputBox = Tkinter.Text(root, bg='#E0EEEE', height= 1, fg='black', font=("Helvetica", 10), relief=Tkinter.FLAT, yscrollcommand='TRUE')#fg='black', relief=Tkinter.SUNKEN, 
-        self.outputBox.grid(row=6, column=0, columnspan=6)
+        self.outputBox = Tkinter.Text(root, bg=BGCOLOR, height= 1, fg='black', font=("Helvetica", 10), relief=Tkinter.FLAT, yscrollcommand='TRUE')#fg='black', relief=Tkinter.SUNKEN, 
+        self.outputBox.grid(row=6, column=1, columnspan=6)
+        self.insertImage('instructions',row=7,column=1,columnspan=10)
 
 
 
 root = Tkinter.Tk()
 root.title("GeoMapApp to *.stl")
 root.configure(background='#E0EEEE')
-root.geometry('800x150+100+100')
+root.geometry('930x1035')#('800x150+100+100')
 app = Application(master=root)
 app.mainloop()
 

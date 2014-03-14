@@ -20,3 +20,13 @@ Directions:
  14. Start (takes a while)
  15. Your file will be saved in the same directory as the image you chose. 
  16. Print and enjoy!
+
+
+Dependencies:
+ - scipy
+ - stl_tools
+ - Image
+ - Tkinter
+ - numpy
+ - tkFileDialog
+ - sys

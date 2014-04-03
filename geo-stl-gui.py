@@ -1,3 +1,6 @@
+# By: Jim Town
+# james.ross.town@gmail.com
+#
 from scipy.ndimage import gaussian_filter
 from stl_tools import numpy2stl
 import Image
@@ -5,15 +8,17 @@ import Tkinter
 from numpy import asarray
 from tkFileDialog import askopenfilename
 import sys
+from platform import system
 
 # geomapapp -> find map -> grid dialog -> black to white -> no sun -> preferences -> turn off axis -> save as .png
 
 BGCOLOR='#E5EDF3' #'#E0EEEE'
 minImageScale=1  #minimum image size divided by (ie 2 means half)
 maxDimension=400 #much larger than this and the time it takes to compile is too long, the file is too big, and the model is much larger than a printer can print
-border=6 #gets rid of black lat and long lines in the .png default=6
+border=7 #gets rid of black lat and long lines in the .png default=6
 bottom=True #true prints a bottom
-minThickPct=.03 #percent of total height to put at bottom
+minThickHeight=5 #constant base of 5mm
+#minThickPct=.03 #percent of total height to put at bottom
 maxWidth=10000#140 #10000, #afinia website says it can print a 5.5" cube 140mm
 maxDepth=10000#140 #10000, #10000mm=10m user can shrink it with their printer software
 maxHeight=10000#140 #10000, #
@@ -57,7 +62,9 @@ class Application(Tkinter.Frame):
         if self.fileType=='png':
             # take tuple of color values and turn them into one height value
             heightArray  = imageArray[:,:,0] + imageArray[:,:,1] + imageArray[:,:,2]
-            heightArray = gaussian_filter(heightArray, 1)  # smoothing, bigger number= smoother
+            if self.gauss.get():
+                heightArray = gaussian_filter(heightArray, 1)  # smoothing, bigger number= smoother
+                print 'Applying Gaussian Filter...'
         elif self.fileType=='tif' or self.fileType=='iff': #for super users, DEM Tiffs work
             heightArray=imageArray
         return heightArray
@@ -100,7 +107,9 @@ class Application(Tkinter.Frame):
         sqrtAreaM=(float(self.area.get())*1000000)**.5
         #adjusts the height of the model based on the difference in heights
         scaleFactor=self.vertExag.get()*(sqrtAreaMM/sqrtAreaM)*heightDiffMeters/(heightDiffColors*self.imageScale)
-            
+        #set minimum thickness
+        totalHeight=scaleFactor*heightDiffColors
+        minThickPct=minThickHeight/totalHeight
         numpy2stl (heightArray, fileName+".stl",
                    scale=scaleFactor, #maximum height?
                    #mask_val=1, #cuts off bottom to make islands
@@ -134,6 +143,13 @@ class Application(Tkinter.Frame):
         button.grid(row=3, column=self.column, rowspan=2)
         self.column+=1
         return button
+
+    def makeCheckBox(self):
+        self.gauss = Tkinter.BooleanVar()
+        checkBox = Tkinter.Checkbutton(self.frame, text="Gaussian Filter", variable=self.gauss, 
+                                       bg=BGCOLOR, onvalue=True, offvalue=False)
+        checkBox.select()
+        checkBox.grid(row=5, column=6, sticky='w')
     
     def makeScrollBar(self):
         winHeight=min(1060,root.winfo_screenheight()-500)
@@ -171,7 +187,7 @@ class Application(Tkinter.Frame):
     
     def insertImage(self,filename,**options):
         theImage=Tkinter.PhotoImage(file="images/"+filename+".gif")
-        instructionLabel = Tkinter.Label(self.frame, image=theImage)
+        instructionLabel = Tkinter.Label(self.frame, image=theImage, bd=-2)
         instructionLabel.photo=theImage
         instructionLabel.grid(**options)
 
@@ -186,6 +202,7 @@ class Application(Tkinter.Frame):
         self.grid()
         self.imageScale=minImageScale #image size divided by (ie 2 means half): default is 1
         self.column=1
+        self.makeCheckBox()
         self.insertImage('logo',row=0,column=0,rowspan=10)
         self.high=self.makeSlider("Highest Point (m)", 100, from_=0, to=10000, length=200, bg=BGCOLOR, resolution=10, orient=Tkinter.HORIZONTAL)
         self.low =self.makeSlider("Lowest Point (m)", 0, from_=0, to=10000, length=200, bg=BGCOLOR, resolution=10, orient=Tkinter.HORIZONTAL)
@@ -201,6 +218,8 @@ class Application(Tkinter.Frame):
 
 root = Tkinter.Tk()
 root.title("GeoMapApp to *.stl")
+if system()=='Windows':
+    root.wm_iconbitmap('images\geo-stl.ico')
 root.configure(background=BGCOLOR)
 winHeight=min(1060,root.winfo_screenheight()-100)
 root.geometry('950x'+str(winHeight)+'+10+10')

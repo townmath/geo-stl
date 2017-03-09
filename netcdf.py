@@ -1,4 +1,6 @@
-
+# By: Jim Town
+# james.ross.town@gmail.com
+#
 import struct, Image, numpy, sys, math
 #import matplotlib.pyplot as plt
 

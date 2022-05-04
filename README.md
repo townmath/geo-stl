@@ -24,9 +24,11 @@ Directions:
 
 Dependencies:
  - scipy
- - stl_tools
+ - stl
+ - itertools
  - Image
- - Tkinter
+ - tkinter
  - numpy
- - tkFileDialog
  - sys
+ - math
+

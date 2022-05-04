@@ -17,7 +17,7 @@ Directions:
  11. Set high point and low point
  12. Set Vertical Exaggeration (1 looks good, but .5 is closest to real life)
  13. Select File
- 14. Start (takes a while)
+ 14. Start (sometimes takes awhile)
  15. Your file will be saved in the same directory as the image you chose. 
  16. Print and enjoy!
 

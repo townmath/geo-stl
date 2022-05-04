@@ -393,7 +393,7 @@ class Application(Tkinter.Frame):
             numpy2stl (heightArray, fileName+".stl",
                        mask_val=maskValue, #values at or below this are treated as "ocean" to be cut
                        isIsland=self.island.get(),#cuts off bottom to make islands
-                       min_thickness=minThickHeight, #helps reduce waste at bottom?
+                       min_thickness=heightArray.min(), #helps reduce waste at bottom?
                        )
         self.outputBox.delete(1.0,Tkinter.END)
         self.outputBox.insert(Tkinter.END,'Program is finished.')
@@ -549,11 +549,3 @@ app = Application(master=root)
 app.mainloop()
 
 
-#numpy2stl(heightArray, "filename.stl",
-#          scale=0.05, maximum height
-#          mask_val=5., not quite sure, seems to add holes
-#          max_width=235., #width of your 3-D printer surface in mm
-#          max_depth=140., #depth of your 3-D printer surface in mm
-#          max_height=150.,#height of your 3-D printer surface in mm
-#          min_thickness_percent = .005, helps reduce waste at bottom
-#          solid=True) True means it will make a bottom

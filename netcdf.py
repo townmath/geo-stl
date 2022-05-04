@@ -1,7 +1,8 @@
 # By: Jim Town
 # james.ross.town@gmail.com
 #
-import struct, Image, numpy, sys, math
+import struct, numpy, sys, math
+from PIL import Image
 #import matplotlib.pyplot as plt
 
 #'>I'=big endian non-neg int 4 bytes
@@ -17,7 +18,7 @@ def getWord (index, fileStr):
     x+=4
     word=''
     for char in range(lenWord):
-        word+=chr(struct.unpack('B', fileStr[x])[0])
+        word+=chr(fileStr[x])#struct.unpack('B', fileStr[x])[0])
         x+=1
     if x%4!=0:
         x+=4-x%4 #new things always start on %4
@@ -77,7 +78,7 @@ def getAttList (numberOfAttr,fileStr,index):
             x,attValue=getIntOrFloat(x, fileStr, '>f')
             #print word, '=', floatList
         else:
-            print 'not a word or double, nc_type=', nc_type
+            print('not a word or double, nc_type=', nc_type)
             attValue=0
         attDict[word]=attValue
         allAttDict.update(attDict)
@@ -151,9 +152,10 @@ def loadNetCDF (fileName):
     index=0
     #note: struct.unpack('B', fileStr[x]) returns a tuple, index 0 is the only element of the tuple
     for magic in range(3): #print CDF
-        print chr(struct.unpack('B', fileStr[magic])[0]),
+        #print(chr(struct.unpack('B', fileStr[magic])[0]),)
+        print(chr(fileStr[magic]),end="")
         index+=1
-    print 'verson: ', int(struct.unpack('B', fileStr[index])[0])
+    print(' verson: ', fileStr[index])#int(struct.unpack('B', fileStr[index])[0]))
     index+=1
     #print 'numrecs=',struct.unpack('>I', fileStr[index:index+4])[0]
     index+=4
@@ -161,12 +163,12 @@ def loadNetCDF (fileName):
         index+=4
         dim_list=struct.unpack('>I', fileStr[index:index+4])[0]
         index+=4
-        #print 'dim_list=',dim_list
+        print ('dim_list=',dim_list)
         index,dimDict=getDimList(dim_list,fileStr,index)
-        print dimDict
+        print(dimDict)
     else:
         index+=8 #if no dim_list then absent which is 8 0's
-        print 'no dim_list'
+        print('no dim_list')
     #print struct.unpack('>I', fileStr[index:index+4])[0]
     if struct.unpack('>I', fileStr[index:index+4])[0]==12: #12 means att_list is present, 0 means it isn't
         index+=4
@@ -177,7 +179,7 @@ def loadNetCDF (fileName):
         #print attDict
     else:
         index+=8 #if no dim_list then absent which is 8 0's
-        print 'no att_list'
+        print('no att_list')
     #print struct.unpack('>I', fileStr[index:index+4])[0]
     if struct.unpack('>I', fileStr[index:index+4])[0]==11: #11 means var_list is present, 0 means it isn't
         index+=4
@@ -187,11 +189,11 @@ def loadNetCDF (fileName):
         #print index
         index,varDict=getVarList(var_list,fileStr,index)
         for key in varDict:
-            print key, varDict[key]
+            print(key, varDict[key])
 #        print index
     else:
         index+=8 #if no dim_list then absent which is 8 0's
-        print 'no var_list'
+        print('no var_list')
     #get x range
     longList=getVar(varDict['x_range'], fileStr)
     #get y range
@@ -212,7 +214,7 @@ if __name__ == '__main__':
     #loadData1('halfdome_netcdf3.nc')
     #loadData1('halfdome_97_unmasked.grd')
     #loadData1('halfdome_97_masked.grd')
-    loadNetCDF('halfdome_48_unmasked.grd')
+    loadNetCDF('untitled3.nc')
     #saveData1('halfdome_48_unmasked.grd',600,800)
     #loadData1('halfdome_48_masked.grd')
     #loadData1('halfdome_24_unmasked.grd')

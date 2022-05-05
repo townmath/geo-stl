@@ -21,6 +21,11 @@ Directions:
  15. Your file will be saved in the same directory as the image you chose. 
  16. Print and enjoy!
 
+Also accepts most .xyz, GeoTiff, and NetCDF files.
+Now includes island mode, where it will try to cut off the ocean and leave just the island behind. 
+See examples on Thingiverse: 
+[Ross Island](https://www.thingiverse.com/thing:5377535)
+[Mt. Rainier](https://www.thingiverse.com/thing:240946)
 
 Dependencies:
  - scipy

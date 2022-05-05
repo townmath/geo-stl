@@ -90,7 +90,7 @@ def getSides(heights,goodPts,minVal):
             backInTime+=1
             nextPt=sides[-backInTime]
             backInTime+=1
-            print(backInTime,nextPt)
+            #print(backInTime,nextPt)
         else:
             backInTime=1
         sides.append(nextPt)
@@ -124,7 +124,7 @@ def getTriangles(heights,i,j,minVal,minThickness,verbose=False):
         isIn(heights,otherPts['SW']) and heights[otherPts['SW']]>minVal and
         isIn(heights,otherPts['S'])  and heights[otherPts['S']]>minVal):
         triTop=[[i,j,heights[i,j]],[i+1,j-1,heights[i+1,j-1]],[i+1,j,heights[i+1,j]]]
-        triBot=[[i,j,-minThickness],[i+1,j-1,-minThickness],[i+1,j,-minThickness]]
+        triBot=[[i,j,minThickness],[i+1,j-1,minThickness],[i+1,j,minThickness]]
         triangles.append(triTop)
         triangles.append(triBot)
         if verbose:
@@ -138,7 +138,7 @@ def getTriangles(heights,i,j,minVal,minThickness,verbose=False):
     if (isIn(heights,otherPts['E'])  and heights[otherPts['E']]>minVal and
         isIn(heights,otherPts['SE']) and heights[otherPts['SE']]>minVal):
         triTop=[[i,j,heights[i,j]],[i+1,j+1,heights[i+1,j+1]],[i,j+1,heights[i,j+1]]]
-        triBot=[[i,j,-minThickness],[i+1,j+1,-minThickness],[i,j+1,-minThickness]]
+        triBot=[[i,j,minThickness],[i+1,j+1,minThickness],[i,j+1,minThickness]]
         triangles.append(triTop)
         triangles.append(triBot)
         if verbose:
@@ -152,7 +152,7 @@ def getTriangles(heights,i,j,minVal,minThickness,verbose=False):
         isIn(heights,otherPts['S']) and heights[otherPts['S']]>minVal and
         isIn(heights,otherPts['E'])  and heights[otherPts['E']]>minVal):
         triTop=[[i,j,heights[i,j]],[i+1,j,heights[i+1,j]],[i,j+1,heights[i,j+1]]]
-        triBot=[[i,j,-minThickness],[i+1,j,-minThickness],[i,j+1,-minThickness]]
+        triBot=[[i,j,minThickness],[i+1,j,minThickness],[i,j+1,minThickness]]
         triangles.append(triTop)
         triangles.append(triBot)
         if verbose:
@@ -165,7 +165,7 @@ def getTriangles(heights,i,j,minVal,minThickness,verbose=False):
     if (isIn(heights,otherPts['S'])  and heights[otherPts['S']]>minVal and
         isIn(heights,otherPts['SE']) and heights[otherPts['SE']]>minVal):
         triTop=[[i,j,heights[i,j]],[i+1,j,heights[i+1,j]],[i+1,j+1,heights[i+1,j+1]]]
-        triBot=[[i,j,-minThickness],[i+1,j,-minThickness],[i+1,j+1,-minThickness]]
+        triBot=[[i,j,minThickness],[i+1,j,minThickness],[i+1,j+1,minThickness]]
         triangles.append(triTop)
         triangles.append(triBot)
         if verbose:
@@ -205,8 +205,8 @@ def numpy2stlIslands(heights,fileName="test.stl",minVal=0,minThickness=1):#tryin
             nextS=sidePts[s+1]
         i,j=side
         nextI,nextJ=nextS
-        tri1=[[i,j,-minThickness],[nextI,nextJ,heights[nextI,nextJ]],[i,j,heights[i,j]]]
-        tri2=[[i,j,-minThickness],[nextI,nextJ,-minThickness],[nextI,nextJ,heights[nextI,nextJ]]]
+        tri1=[[i,j,minThickness],[nextI,nextJ,heights[nextI,nextJ]],[i,j,heights[i,j]]]
+        tri2=[[i,j,minThickness],[nextI,nextJ,minThickness],[nextI,nextJ,heights[nextI,nextJ]]]
         shape.vectors[triCnt]=tri1
         shape.vectors[triCnt+1]=tri2
         triCnt+=2
@@ -233,26 +233,26 @@ def numpy2stlRectangles(heights,fileName="test.stl",minThickness=1):#rectangular
     #side1 j=0 and side3 j=shape[1]-1
     for i in range(heights.shape[0]-1):
         for j in [0,heights.shape[1]-1]:
-            tri1=[[i,j,-minThickness],[i,j,heights[i,j]],[i+1,j,heights[i+1,j]]]
-            tri2=[[i,j,-minThickness],[i+1,j,heights[i+1,j]],[i+1,j,-minThickness]]
+            tri1=[[i,j,minThickness],[i,j,heights[i,j]],[i+1,j,heights[i+1,j]]]
+            tri2=[[i,j,minThickness],[i+1,j,heights[i+1,j]],[i+1,j,minThickness]]
             shape.vectors[triCnt]=tri1
             shape.vectors[triCnt+1]=tri2
             triCnt+=2
     #side2 i=0 and side4 i=shape[0]-1
     for j in range(heights.shape[1]-1):
         for i in [0,heights.shape[0]-1]:
-            tri1=[[i,j,-minThickness],[i,j,heights[i,j]],[i,j+1,heights[i,j+1]]]
-            tri2=[[i,j,-minThickness],[i,j+1,heights[i,j+1]],[i,j+1,-minThickness]]
+            tri1=[[i,j,minThickness],[i,j,heights[i,j]],[i,j+1,heights[i,j+1]]]
+            tri2=[[i,j,minThickness],[i,j+1,heights[i,j+1]],[i,j+1,minThickness]]
             shape.vectors[triCnt]=tri1
             shape.vectors[triCnt+1]=tri2
             triCnt+=2
     #bottom
-    tri1=[[0,0,-minThickness],
-          [0,heights.shape[1]-1,-minThickness],
-          [heights.shape[0]-1,heights.shape[1]-1,-minThickness]]
-    tri2=[[0,0,-minThickness],
-          [heights.shape[0]-1,0,-minThickness],
-          [heights.shape[0]-1,heights.shape[1]-1,-minThickness]]
+    tri1=[[0,0,minThickness],
+          [0,heights.shape[1]-1,minThickness],
+          [heights.shape[0]-1,heights.shape[1]-1,minThickness]]
+    tri2=[[0,0,minThickness],
+          [heights.shape[0]-1,0,minThickness],
+          [heights.shape[0]-1,heights.shape[1]-1,minThickness]]
     shape.vectors[triCnt]=tri1
     shape.vectors[triCnt+1]=tri2
     

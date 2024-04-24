@@ -1,3 +1,6 @@
+1.1
+Fixed geoTiff tags
+
 1.0
 Updated to work with Python3.
 

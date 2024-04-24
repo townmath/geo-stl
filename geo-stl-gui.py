@@ -20,7 +20,8 @@ from tkinter.filedialog import askopenfilename
 import sys
 import math
 from platform import system
-from ttk import Separator
+
+from tkinter.ttk import Separator
 #import tkMessageBox
 import struct
 
@@ -131,13 +132,13 @@ class Application(Tkinter.Frame):
         tifFile = open(self.fileLocation, "rb")
         fileStr=tifFile.read()
         tifFile.close()
-        rowsPerStrip=img.tag.tags[278][0] #tag 278 is the list of Rows per strip
+        rowsPerStrip=img.getexif().tags[278][0] #tag 278 is the list of Rows per strip
         #print 'rowsPerStrip', rowsPerStrip
         #print (self.height, self.width)
         imageArray=np.zeros((self.height,self.width),float)
         y=0
         x=0
-        for offset in img.tag.tags[273]: #tag 273 is the list of strip offsets
+        for offset in img.getexif().tags[273]: #tag 273 is the list of strip offsets
             #print offset,x,y
             if y+1<self.height:
                 for word in range(offset,self.width*4*rowsPerStrip+offset,4):
@@ -160,6 +161,7 @@ class Application(Tkinter.Frame):
         sys.stdout = self.NullDevice()  # redirect the real STDOUT
         Image.DEBUG=True
         img = Image.open(self.fileLocation)
+        tags=img.getexif()
         sys.stdout = originalStdout  # turn STDOUT back on
         self.width,self.height=img.size
         try:
@@ -188,29 +190,29 @@ class Application(Tkinter.Frame):
                 else:
                     memoryError=False
             self.width,self.height=int(self.width/self.wayTooBigFactor),int(self.height/self.wayTooBigFactor)
-            if img.tag.tags.get(258,0)==(8,8,8): #258 is bits per sample 32 means data, 8,8,8 means color
+            if tags.get(258,0)==(8,8,8): #258 is bits per sample 32 means data, 8,8,8 means color
                 imageArray=imageArray[:,:,0] + imageArray[:,:,1] + imageArray[:,:,2]
         if self.override.get():
             defaultHeight=self.lowGot
         else:
             defaultHeight=np.nanmin(imageArray)
         #print img.tag.tags[33922]
-        tiePt=img.tag.tags.get(33922,None)
+        tiePt=tags.get(33922,None)
         if tiePt is not None:
             tiePt=tiePt[4]
         else:
             tiePt=1.
         k=self.findK(tiePt/1000.0) #model tiepoint tag (x,y,z,i,j,k) where x,y is the origin of the image file and i,j is where it is on the earth, possibly, you never can tell with bees
-        scales=img.tag.tags.get(33550,(1,1,1))
+        scales=tags.get(33550,(1,1,1))
         self.scale=tuple(scaleFactor/k for scaleFactor in scales) #scale tag tuple (xScale,yScale,0) (zScale is for 3D geotiffs)
         output=''
-        #print img.tag.tags
+        print (tags)
         #print(imageArray.max(), imageArray.min(),imageArray.shape,imageArray[0,0])
         if np.isnan(imageArray).any():
             imageArray[np.isnan(imageArray)]=defaultHeight
             output='Missing data points... '
         try:
-            maskValue=float(img.tag.tags[42113])
+            maskValue=float(tags[42113])
         except KeyError: #key doesn't exist, checking for ridiculous points
             if self.override.get():
                 imageArray[imageArray<self.lowGot]=defaultHeight
@@ -393,7 +395,7 @@ class Application(Tkinter.Frame):
             numpy2stl (heightArray, fileName+".stl",
                        mask_val=maskValue, #values at or below this are treated as "ocean" to be cut
                        isIsland=self.island.get(),#cuts off bottom to make islands
-                       min_thickness=heightArray.min(), #helps reduce waste at bottom?
+                       min_thickness=minThickHeight, #helps reduce waste at bottom?
                        )
         self.outputBox.delete(1.0,Tkinter.END)
         self.outputBox.insert(Tkinter.END,'Program is finished.')
@@ -498,8 +500,8 @@ class Application(Tkinter.Frame):
         # first row
         self.column=1
         self.row=3
-        self.high=self.intInput("Highest Point (m):",bg=BGCOLOR,width=10, defaultValue='100')
         self.low =self.intInput("Lowest Point (m):",bg=BGCOLOR, width=10, defaultValue='0')
+        self.high=self.intInput("Highest Point (m):",bg=BGCOLOR,width=10, defaultValue='100')
         Separator(self.frame, orient=Tkinter.VERTICAL).grid(row=self.row, column=self.column, rowspan=3, sticky='ns')
         self.column+=1
         self.vertExag=self.intInput("Vertical Exaggeration:", bg=BGCOLOR, width=50)
@@ -544,8 +546,16 @@ if system()=='Windows':
     root.wm_iconbitmap('images\geo-stl.ico')
 root.configure(background=BGCOLOR)
 #winHeight=min(1060,root.winfo_screenheight()-100)
-root.geometry('1140x330+10+10')
+root.geometry('900x330+10+10')
 app = Application(master=root)
 app.mainloop()
 
 
+#numpy2stl(heightArray, "filename.stl",
+#          scale=0.05, maximum height
+#          mask_val=5., not quite sure, seems to add holes
+#          max_width=235., #width of your 3-D printer surface in mm
+#          max_depth=140., #depth of your 3-D printer surface in mm
+#          max_height=150.,#height of your 3-D printer surface in mm
+#          min_thickness_percent = .005, helps reduce waste at bottom
+#          solid=True) True means it will make a bottom

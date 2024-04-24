@@ -135,10 +135,10 @@ def loadXYZdata(fileLocation):
     dataFile = open(fileLocation,'r')
     nextLine = dataFile.readline()
     dataFile.close()
-    #if ',' in nextLine:
-    return loadXYZdataComma(fileLocation)
-    #else:
-    #    return loadXYZdataTab(fileLocation)
+    if ',' in nextLine:#I should probably combine these
+        return loadXYZdataComma(fileLocation)
+    else:#is tab
+        return loadXYZdataTab(fileLocation)
     
 def loadAsciiData (fileLocation,lastGoodValue,override): #opentopo ascii file...depracated?
     dataFile = open(fileLocation,'r')
